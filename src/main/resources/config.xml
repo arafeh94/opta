@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+    <scanAnnotatedClasses>
+        <packageInclude>domain</packageInclude>
+    </scanAnnotatedClasses>
+    <scoreDirectorFactory>
+        <scoreDrl>rules.drl</scoreDrl>
+        <initializingScoreTrend>ONLY_DOWN</initializingScoreTrend>
+    </scoreDirectorFactory>
+    <termination>
+        <unimprovedSecondsSpentLimit>2</unimprovedSecondsSpentLimit>
+    </termination>
+</solver>

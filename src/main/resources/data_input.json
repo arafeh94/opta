@@ -1,0 +1,51 @@
+{
+  "counter": [
+    {
+      "id": "1",
+      "zone_id": "1",
+      "proximity": "2",
+      "unavailabilityPeriodStartTime": "2020-02-19 10:35:00",
+      "unavailabilityPeriodEndTime": "2020-01-29 14:35:00",
+      "is_deleted": "0"
+    }
+  ],
+  "zone": [
+    {
+      "id": "1",
+      "name": "zone12",
+      "is_deleted": "1"
+    },
+    {
+      "id": "2",
+      "name": "zone2",
+      "is_deleted": "0"
+    }
+  ],
+  "preferences": [
+    {
+      "id": "1",
+      "flight_group_id": "1",
+      "zone_id": "1",
+      "points": "10",
+      "is_deleted": "0"
+    }
+  ],
+  "requirements": [
+    {
+      "id": 1,
+      "flight_group_id": 1,
+      "counter_id": 1,
+      "date_start": "2020-02-19 14:55:00",
+      "date_end": "2020-02-19 23:55:00",
+      "is_deleted": false
+    }
+  ],
+  "flightGroups": [
+    {
+      "id": 1,
+      "planned": true,
+      "is_deleted": false,
+      "name": "samira"
+    }
+  ]
+}
