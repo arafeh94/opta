@@ -18,34 +18,11 @@ import java.util.Objects;
 @XStreamAlias("FlightGroup")
 @PlanningEntity
 public class FlightGroup extends AbstractPersistable implements Labeled {
-    /**
-     * @param requirements
-     * @return
-     */
-    public static FlightGroup create(ArrayList<Requirement> requirements) {
-        return new FlightGroup(IdGenerator.getId("flightGroup"), "fg", 0, requirements, new HashMap<>());
-    }
-
-
-    /**
-     * @param requirements
-     * @return
-     */
-    public static FlightGroup create(ArrayList<Requirement> requirements, HashMap<Zone, Integer> preferences) {
-        return new FlightGroup(IdGenerator.getId("flightGroup"), "fg", 0, requirements, preferences);
-    }
-
-    /**
-     * @param requirements
-     * @return
-     */
-    public static FlightGroup create(int totalPassenger, ArrayList<Requirement> requirements, HashMap<Zone, Integer> preferences) {
-        return new FlightGroup(IdGenerator.getId("flightGroup"), "fg", totalPassenger, requirements, preferences);
-    }
-
     private List<Requirement> requirementList;
 
     private Boolean planned;
+    private String reason;
+
     private String name;
     private int totalPassenger;
 
@@ -70,8 +47,9 @@ public class FlightGroup extends AbstractPersistable implements Labeled {
         return planned;
     }
 
-    public void setPlanned(Boolean planned) {
+    public void setPlanned(Boolean planned, String reason) {
         this.planned = planned;
+        this.reason = reason;
     }
 
     public List<Requirement> getRequirementList() {

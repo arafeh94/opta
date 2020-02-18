@@ -157,7 +157,7 @@ public class CLIStarter {
         jsAllocator.image = GanttViewer.create(solved).save(SAVE_PATH);
         jsAllocator.score = new JSSCore(solved.getScore().getHardScore(0), solved.getScore().getSoftScore(0), solved.getScore().getSoftScore(1), solved.getScore().getSoftScore(2), solved.getScore().getSoftScore(3));
         System.out.println(new Gson().toJson(jsAllocator));
-//        GanttViewer.create(solved).show();
+        GanttViewer.create(solved).show();
     }
 
 

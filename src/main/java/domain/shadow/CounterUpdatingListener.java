@@ -68,26 +68,36 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
         FlightGroup flightGroup = requirement.getFlightGroup();
         List<Requirement> flightGroupRequirements = flightGroup.getRequirementList();
         List<Counter> counters = new ArrayList<>();
+        if (flightGroupRequirements.size() == 1) {
+            flightGroup.setPlanned(true, "");
+            return;
+        }
         for (Requirement i : flightGroupRequirements) {
-            if (i.getCounter() != null) counters.add(i.getCounter());
-            for (Requirement j : flightGroupRequirements) {
-                flightGroup.setPlanned(i.isOverlappedWith(j) && i.getCounter() == j.getCounter());
+            if (i.getCounter() != null) {
+                counters.add(i.getCounter());
+                for (Requirement j : flightGroupRequirements) {
+                    if (j.getCounter() != null) {
+                        if (i == j) continue;
+                        if (i.getCounter() == j.getCounter() && i.isOverlappedWith(j)) {
+                            flightGroup.setPlanned(false, "because overlapping");
+                            return;
+                        } else {
+                            flightGroup.setPlanned(true, "");
+                        }
+                    }
+                }
             }
         }
-        long[] ids = counters.stream().sorted(AbstractPersistable::compareTo)
-                .mapToLong(AbstractPersistable::getId)
-                .toArray();
-
-
-        for (int i = 0; i < ids.length - 1; i++) {
-            long id1 = ids[i];
-            long id2 = ids[i + 1];
-            if (id2 - id1 != 1) {
-                flightGroup.setPlanned(false);
-                break;
+        int errors = 0;
+        for (Requirement req : flightGroupRequirements) {
+            if (req.getCounter() != null && counters.indexOf(req.getCounter().next()) == -1) {
+                errors += 1;
             }
         }
+        String msg = "because didn't have sequential counters";
+        flightGroup.setPlanned(errors <= 1, msg);
     }
+
 
     @Override
     public void beforeEntityRemoved(ScoreDirector scoreDirector, Requirement requirement) {

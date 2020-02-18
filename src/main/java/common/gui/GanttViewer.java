@@ -1,5 +1,6 @@
 package common.gui;
 
+import domain.Counter;
 import domain.FgAllocator;
 import domain.FlightGroup;
 import domain.Requirement;
@@ -37,7 +38,6 @@ public class GanttViewer {
 
     private void init() {
         TaskSeriesCollection dataset = new TaskSeriesCollection();
-
         for (FlightGroup flightGroup : solution.getFlightGroupsList()) {
             if (flightGroup.getPlanned() != null && flightGroup.getPlanned()) {
                 TaskSeries flightGroupTasks = new TaskSeries(flightGroup.getLabel());
@@ -52,7 +52,7 @@ public class GanttViewer {
     }
 
     private void draw() {
-        chart = ChartFactory.createGanttChart("Flight Group Allocation", "X", "Y", dataset, true, true, true);
+        chart = ChartFactory.createGanttChart("Flight Group Allocation", "Counter", "Time", dataset, true, true, true);
         chartPanel = new ChartPanel(chart);
         frame = new JFrame("Counter Distribution");
         frame.setContentPane(chartPanel);

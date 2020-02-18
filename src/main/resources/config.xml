@@ -5,7 +5,7 @@
     </scanAnnotatedClasses>
     <scoreDirectorFactory>
         <scoreDrl>rules.drl</scoreDrl>
-        <initializingScoreTrend>ONLY_DOWN</initializingScoreTrend>
+        <initializingScoreTrend>ANY</initializingScoreTrend>
     </scoreDirectorFactory>
     <termination>
         <unimprovedSecondsSpentLimit>2</unimprovedSecondsSpentLimit>

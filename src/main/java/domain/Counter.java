@@ -106,7 +106,7 @@ public class Counter extends AbstractPersistable implements Labeled {
             Optional<Counter> counter = getRange().next().getCounters().stream().min(Comparator.comparingInt(c -> c.positionInRange));
             return counter.orElse(null);
         }
-        return null;
+        return next;
     }
 
     public boolean isInSameZone(Counter counter) {

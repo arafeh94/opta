@@ -69,7 +69,7 @@ end
 rule "zone_enforcer"
     when
         Requirement($fg:flightGroup, counter!=null, $counter:counter)
-        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), counter.isInSameZone($counter))
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), !counter.isInSameZone($counter))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
@@ -84,10 +84,9 @@ end
 
 rule "fg_preferences"
 when
-        $req: Requirement(counter != null,counter.range.zone != null,flightGroup != null)
+        $req: Requirement(counter != null,counter.range !=null, counter.range.zone != null,flightGroup != null,$fg:flightGroup,$zone:counter.range.zone,$counter:counter)
     then
-        scoreHolder.addSoftConstraintMatch(kcontext,1,$req.getFlightGroup().getPreference($req.getCounter().getRange().getZone()));
-        scoreHolder.addSoftConstraintMatch(kcontext,1,$req.getCounter().getProximity());
+        scoreHolder.addSoftConstraintMatch(kcontext,1,$fg.getPreference($zone) + $counter.getProximity());
 end
 
 //sar fi 3inna range badal zone fa sar badda ghyar

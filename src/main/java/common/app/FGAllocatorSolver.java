@@ -2,6 +2,7 @@ package common.app;
 
 import common.gui.GanttViewer;
 import domain.FgAllocator;
+import domain.Requirement;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
 
@@ -11,4 +12,6 @@ public class FGAllocatorSolver {
         Solver<FgAllocator> solver = solverFactory.buildSolver();
         return solver.solve(allocator);
     }
+
+
 }
