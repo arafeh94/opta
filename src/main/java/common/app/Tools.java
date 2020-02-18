@@ -12,22 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Tools {
 
-    public static Date stringToDate(String date) throws ParseException {
-        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(date);
-    }
-
-    public static LocalTime stringToLocalTime(String time) throws ParseException {
-        return LocalTime.parse(time);
-    }
-
-    public static String dateToString(Date date) {
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
     public static <T extends AbstractPersistable> T find(ArrayList<T> list, long id) {
         return list.stream().filter(z -> z.getId() == id).findFirst().orElse(null);
     }

@@ -73,12 +73,12 @@ public class Zone extends AbstractPersistable {
      * mazbut ? yes
      * return congestion value of a requirement
      * congestion = sum(max capacity - total passenger) calculate in 15 min time period
-     * remaining time < 1h30min => 10%
-     * remaining time < 1h15min => 15%
-     * remaining time < 1h => 25%
-     * remaining time < 45min => 25%
-     * remaining time < 30min => 20%
-     * remaining time < 15min => 5%
+     * LEVEL_1 = remaining time < 1h30min => 10%
+     * LEVEL_2 = remaining time < 1h15min => 15%
+     * LEVEL_3 = remaining time < 1h => 25%
+     * LEVEL_4 = remaining time < 45min => 25%
+     * LEVEL_5 = remaining time < 30min => 20%
+     * LEVEL_6 = remaining time < 15min => 5%
      *
      * @return congestion value
      */
@@ -86,26 +86,25 @@ public class Zone extends AbstractPersistable {
         long remaining = flightGroup.getTotalCounterUsage();
         int totalFlightGroupExpectedPassengers = flightGroup.getTotalPassenger();
         int congestion = 0;
-        long level = 0L;
         while (remaining > 0) {
             double expectedPassenger = 0;
             if (LEVEL_1 <= remaining) {
                 expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
                 remaining = LEVEL_2;
             } else if (LEVEL_2 <= remaining) {
-                expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
+                expectedPassenger = 0.15 * totalFlightGroupExpectedPassengers;
                 remaining = LEVEL_3;
             } else if (LEVEL_3 <= remaining) {
-                expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
+                expectedPassenger = 0.25 * totalFlightGroupExpectedPassengers;
                 remaining = LEVEL_4;
             } else if (LEVEL_4 <= remaining) {
-                expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
+                expectedPassenger = 0.25 * totalFlightGroupExpectedPassengers;
                 remaining = LEVEL_5;
             } else if (LEVEL_5 <= remaining) {
-                expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
+                expectedPassenger = 0.2 * totalFlightGroupExpectedPassengers;
                 remaining = LEVEL_6;
             } else if (LEVEL_6 <= remaining) {
-                expectedPassenger = 0.1 * totalFlightGroupExpectedPassengers;
+                expectedPassenger = 0.05 * totalFlightGroupExpectedPassengers;
                 remaining = 0;
             } else {
                 remaining = 0;

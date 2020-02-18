@@ -1,6 +1,7 @@
 package domain;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import common.app.Var;
 import common.domain.AbstractPersistable;
 import common.domain.IdGenerator;
 import common.domain.Labeled;
@@ -12,6 +13,7 @@ import org.optaplanner.core.api.domain.variable.PlanningVariableReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @XStreamAlias("FlightGroup")
 @PlanningEntity
@@ -145,8 +147,33 @@ public class FlightGroup extends AbstractPersistable implements Labeled {
         return totalUsage;
     }
 
+    /**
+     * wa2tiye :p
+     *
+     * @return
+     */
+    public int getTotalNumberOfBags() {
+        return getTotalPassenger();
+    }
+
     @Override
     public String toString() {
         return getLabel();
+    }
+
+    public int conjunctionCongestion() {
+        Var<Integer> totalCapacity = Var.of(0);
+        ArrayList<Conjunction> calculated = new ArrayList<>();
+        requirementList.stream().filter(r -> r.getCounter() != null).forEach(requirement -> {
+            Counter counter = requirement.getCounter();
+            if (counter != null) {
+                Conjunction conjunction = counter.getBelt().getConjunction();
+                if (calculated.indexOf(conjunction) == -1) {
+                    totalCapacity.set(totalCapacity.get() + counter.getBelt().getConjunction().getMaxCapacity());
+                    calculated.add(conjunction);
+                }
+            }
+        });
+        return totalCapacity.get() - getTotalNumberOfBags();
     }
 }

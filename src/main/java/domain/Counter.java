@@ -7,9 +7,12 @@ import common.domain.Labeled;
 import domain.json.JSCounter;
 
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
+
+import static common.business.TimeTools.*;
 
 @XStreamAlias("Counter")
 public class Counter extends AbstractPersistable implements Labeled {
@@ -24,8 +27,10 @@ public class Counter extends AbstractPersistable implements Labeled {
     public Counter() {
     }
 
-    public Counter(long id, int proximity, float ratioPassengerPerTimeUnit, Range range, int positionInRange, Belt belt) {
+    public Counter(long id, LocalTime unavailabilityPeriodStartTime, LocalTime unavailabilityPeriodEndTime, int proximity, float ratioPassengerPerTimeUnit, Range range, Belt belt, int positionInRange) {
         super(id);
+        this.unavailabilityPeriodStartTime = unavailabilityPeriodStartTime;
+        this.unavailabilityPeriodEndTime = unavailabilityPeriodEndTime;
         this.proximity = proximity;
         this.ratioPassengerPerTimeUnit = ratioPassengerPerTimeUnit;
         this.range = range;
@@ -89,8 +94,10 @@ public class Counter extends AbstractPersistable implements Labeled {
         this.proximity = proximity;
     }
 
-    public boolean isAvailable(LocalTime start, LocalTime end) {
-        return true;
+    public boolean isAvailable(Date startDate, Date endDate) {
+        LocalTime start = time(startDate);
+        LocalTime end = time(endDate);
+        return !TimeTools.overlap(this.unavailabilityPeriodStartTime, this.unavailabilityPeriodEndTime, start, end);
     }
 
     public Counter next() {
@@ -101,6 +108,12 @@ public class Counter extends AbstractPersistable implements Labeled {
         }
         return null;
     }
+
+    public boolean isInSameZone(Counter counter) {
+        if (counter == null) return false;
+        return this.getRange().getZone().equals(counter.getRange().getZone());
+    }
+
 
     @Override
     public String getLabel() {

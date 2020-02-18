@@ -76,7 +76,7 @@ public class FgAllocator extends AbstractPersistable {
         return zoneList;
     }
 
-    @PlanningScore(bendableHardLevelsSize = 1, bendableSoftLevelsSize = 2)
+    @PlanningScore(bendableHardLevelsSize = 1, bendableSoftLevelsSize = 4)
     private BendableScore score;
 
     public void setCountersList(List<Counter> countersList) {

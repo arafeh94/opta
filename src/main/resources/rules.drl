@@ -38,7 +38,7 @@ rule "overlapping"
         scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
 
-//hyde saret ghalat ba3ed ma albna l counter unvaiable la time bass
+
 rule "unavailable_counter"
  when
     $req : Requirement()
@@ -47,58 +47,63 @@ rule "unavailable_counter"
     scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
 
-//hone sar lezm zid l range bel mawdou3, iza ken l next counter don't have the same range ya3ne mannu mazbuta
+//kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed zid  lscore
 rule "siblings_enforcer"
     when
-        Requirement($fg:flightGroup,$counter:counter,$classType:classType)
-        $next : Counter($counter != null && id == $counter.getId()+1)
-        Requirement(flightGroup==$fg,counter==$next)
+        Requirement($fg:flightGroup, counter!=null, $counter:counter,$classType:classType)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,+2);
 end
 
-//kamena badda teghyir metel l oula
+//kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed w henne "mannon same class", "na22es" lscore * 0.5 weight
 rule "class_enforcer"
     when
-        Requirement($fg:flightGroup,$counter:counter,$classType:classType)
-        $next : Counter($counter != null && id == $counter.getId()+1)
-        Requirement(flightGroup==$fg,counter==$next,$classType!= classType)
+        Requirement($fg:flightGroup, counter!=null, $counter:counter, $classType:classType)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), $classType!= classType)
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,-1);
 end
 
-//kamena same lli fo2
+//kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed w henne "mannon in the same zone", "na22es" lscore
 rule "zone_enforcer"
     when
-        Requirement($fg:flightGroup,$counter:counter,$classType:classType)
-        $next : Counter($counter != null && id == $counter.getId()+1)
-        Requirement(flightGroup==$fg,counter==$next,counter.zone != $next.zone)
+        Requirement($fg:flightGroup, counter!=null, $counter:counter)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), counter.isInSameZone($counter))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
 
-//ana ma3 nshila la he
 rule "unplanned_penalty"
     when
         FlightGroup(planned == false)
     then
-        scoreHolder.addHardConstraintMatch(kcontext,0,-2);
+        scoreHolder.addSoftConstraintMatch(kcontext,0,-2);
 end
 
-//ma tghyret
+
 rule "fg_preferences"
 when
-        $req: Requirement(counter != null,counter.getZone() != null,flightGroup != null)
+        $req: Requirement(counter != null,counter.range.zone != null,flightGroup != null)
     then
-        scoreHolder.addSoftConstraintMatch(kcontext,0,$req.getFlightGroup().getPreference($req.getCounter().getZone()));
-        scoreHolder.addSoftConstraintMatch(kcontext,0,$req.getCounter().getProximity());
+        scoreHolder.addSoftConstraintMatch(kcontext,1,$req.getFlightGroup().getPreference($req.getCounter().getRange().getZone()));
+        scoreHolder.addSoftConstraintMatch(kcontext,1,$req.getCounter().getProximity());
 end
 
 //sar fi 3inna range badal zone fa sar badda ghyar
 rule "zone_congestion"
 when
         $fg : FlightGroup()
-        $req : Requirement(flightGroup==$fg, counter != null,counter.getZone() != null)
+        $req : Requirement(flightGroup==$fg, counter != null,counter.range.zone!=null)
+        exists Requirement(flightGroup==$fg, counter != null,counter.range.zone!=null)
     then
-        scoreHolder.addSoftConstraintMatch(kcontext,1,-$req.getCounter().getZone().congestion($fg));
+        scoreHolder.addSoftConstraintMatch(kcontext,2,-$req.getCounter().getRange().getZone().congestion($fg));
+end
+
+//
+rule "conjunction _congestion"
+when
+        $fg : FlightGroup()
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext,3,-$fg.conjunctionCongestion());
 end

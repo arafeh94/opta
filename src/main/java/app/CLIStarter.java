@@ -2,7 +2,6 @@ package app;
 
 import com.google.gson.Gson;
 import common.app.FGAllocatorSolver;
-import common.app.Tools;
 import common.gui.GanttViewer;
 import domain.*;
 import domain.json.*;
@@ -14,6 +13,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static common.app.Tools.find;
+import static common.app.Tools.findP;
+import static common.business.TimeTools.stringToDate;
+import static common.business.TimeTools.stringToLocalTime;
 
 public class CLIStarter {
     private static final String SAVE_PATH = "C:\\wamp64\\www\\optaweb\\web";
@@ -59,17 +61,18 @@ public class CLIStarter {
         ArrayList<Zone> zones = new ArrayList<>();
         for (JSZone jsZone : jsAllocator.zones) {
             Terminal terminal = find(terminals, jsZone.terminal_id);
-            Zone zone = new Zone(jsZone.id, jsZone.name, jsZone.maxPassenger, terminal);
+            Zone zone = new Zone(jsZone.id, jsZone.name, jsZone.max_passenger, terminal);
             zones.add(zone);
             terminal.addZone(zone);
         }
 
         ArrayList<Range> ranges = new ArrayList<>();
         for (JSRange jsRange : jsAllocator.ranges) {
-            Zone zone = find(zones, jsRange.zone_id);
-            Range range = new Range(jsRange.id, zone, 1);
-            ranges.add(range);
-            zone.addRange(range);
+            findP(zones, jsRange.zone_id).ifPresent(zone -> {
+                Range range = new Range(jsRange.id, zone, jsRange.position_in_zone);
+                ranges.add(range);
+                zone.addRange(range);
+            });
         }
 
         ArrayList<Belt> belts = new ArrayList<>();
@@ -79,18 +82,28 @@ public class CLIStarter {
 
         ArrayList<Conjunction> conjunctions = new ArrayList<>();
         for (JSConjunction jsConjunction : jsAllocator.conjunctions) {
-            conjunctions.add(new Conjunction(jsConjunction.id, find(belts, jsConjunction.belt_id_parent), find(belts, jsConjunction.belt_id_child)));
+            Belt parent = find(belts, jsConjunction.belt_id_parent);
+            Belt child = find(belts, jsConjunction.belt_id_child);
+            if (parent != null && child != null) {
+                Conjunction conjunction = new Conjunction(jsConjunction.id, parent, child, jsConjunction.max_capacity);
+                conjunctions.add(conjunction);
+                parent.setConjunction(conjunction);
+                child.setConjunction(conjunction);
+            }
         }
 
         ArrayList<Counter> counters = new ArrayList<>();
         for (JSCounter jsCounter : jsAllocator.counters) {
             Range range = find(ranges, jsCounter.range_id);
             Belt belt = find(belts, jsCounter.belt_id);
-            Counter counter = new Counter(jsCounter.id, jsCounter.proximity, jsCounter.ratio_passenger_per_timeunit, range, 1, belt);
-            counter.setUnavailabilityPeriodStartTime(Tools.stringToLocalTime(jsCounter.unavailabilityPeriodStartTime));
-            counter.setUnavailabilityPeriodEndTime(Tools.stringToLocalTime(jsCounter.unavailabilityPeriodEndTime));
-            counters.add(counter);
-            range.addCounter(counter);
+            if (range != null && belt != null) {
+                Counter counter = new Counter(jsCounter.id,
+                        stringToLocalTime(jsCounter.unavailabilityPeriodStartTime),
+                        stringToLocalTime(jsCounter.unavailabilityPeriodEndTime),
+                        jsCounter.proximity, jsCounter.ratio_passenger_per_timeunit, range, belt, jsCounter.position_in_range);
+                counters.add(counter);
+                range.addCounter(counter);
+            }
         }
 
         ArrayList<FlightGroup> flightGroups = new ArrayList<>();
@@ -107,8 +120,8 @@ public class CLIStarter {
                 requirement.setId(jsRequirement.id);
                 requirement.setBufferTime(jsRequirement.buffer_time);
                 requirement.setClassType(jsRequirement.class_type);
-                requirement.setStartTime(Tools.stringToDate(jsRequirement.date_start));
-                requirement.setEndTime(Tools.stringToDate(jsRequirement.date_end));
+                requirement.setStartTime(stringToDate(jsRequirement.date_start));
+                requirement.setEndTime(stringToDate(jsRequirement.date_end));
                 requirement.setFlightGroup(flightGroup);
                 flightGroup.addRequirement(requirement);
                 requirements.add(requirement);
@@ -118,8 +131,9 @@ public class CLIStarter {
         for (JSPreference jsPreference : jsAllocator.preferences) {
             FlightGroup flightGroup = flightGroups.stream().filter(fg -> fg.getId() == jsPreference.flight_group_id).findFirst().orElse(null);
             if (flightGroup != null) {
-                Zone zone = zones.stream().filter(z -> z.getId() == jsPreference.zone_id).findFirst().orElse(null);
-                flightGroup.putPreference(zone, jsPreference.points);
+                zones.stream().filter(z -> z.getId() == jsPreference.zone_id).findFirst().ifPresent(zone -> {
+                    flightGroup.putPreference(zone, jsPreference.points);
+                });
             }
         }
 
@@ -145,6 +159,7 @@ public class CLIStarter {
         jsAllocator.flightGroups = flightGroups;
         jsAllocator.requirements = requirements;
         jsAllocator.image = GanttViewer.create(solved).save(SAVE_PATH);
+        jsAllocator.score = new JSSCore(solved.getScore().getHardScore(0), solved.getScore().getSoftScore(0), solved.getScore().getSoftScore(1), solved.getScore().getSoftScore(2), solved.getScore().getSoftScore(3));
         System.out.println(new Gson().toJson(jsAllocator));
     }
 

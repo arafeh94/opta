@@ -10,14 +10,24 @@ import java.util.List;
 public class Conjunction extends AbstractPersistable {
     private Belt parent;
     private Belt child;
+    private int maxCapacity;
 
     public Conjunction() {
     }
 
-    public Conjunction(long id, Belt parent, Belt child) {
+    public Conjunction(long id, Belt parent, Belt child, int maxCapacity) {
         super(id);
         this.parent = parent;
         this.child = child;
+        this.maxCapacity = maxCapacity;
+    }
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public Belt getChild() {
@@ -35,4 +45,6 @@ public class Conjunction extends AbstractPersistable {
     public void setParent(Belt parent) {
         this.parent = parent;
     }
+
+
 }

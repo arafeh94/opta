@@ -4,6 +4,7 @@ import com.sun.org.apache.bcel.internal.generic.JSR;
 import domain.Belt;
 import domain.Range;
 import domain.Terminal;
+import org.optaplanner.core.api.score.Score;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -20,5 +21,6 @@ public class JSAllocator {
     public List<JSBelt> belts;
     public List<JSConjunction> conjunctions;
     public String image;
+    public JSSCore score;
 
 }

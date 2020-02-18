@@ -11,6 +11,7 @@ import org.optaplanner.core.api.solver.SolverFactory;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ public class ConsoleStarter {
         for (Requirement requirement : solvedFgAllocator.getRequirementsList()) {
             System.out.println(requirement);
         }
-
     }
 
     private static FgAllocator generateAllocationProblem() {
@@ -56,6 +56,13 @@ public class ConsoleStarter {
             long id = IdGenerator.getId("B");
             Belt belt = new Belt(id, Tools.random(0, 10), "Belt - " + id);
             belts.add(belt);
+        }
+
+        for (int i = 0; i < belts.size() - 1; i += 2) {
+            Conjunction conjunction = new Conjunction(IdGenerator.getId("VG"), belts.get(i), belts.get(i + 1), 10);
+            conjunctions.add(conjunction);
+            belts.get(i).setConjunction(conjunction);
+            belts.get(i + 1).setConjunction(conjunction);
         }
         for (int i = 0; i < 5; i++) {
             Terminal terminal = new Terminal(IdGenerator.getId("T"), "Terminal - " + i);
@@ -83,7 +90,9 @@ public class ConsoleStarter {
                 long id = IdGenerator.getId("C");
                 int finalI = i;
                 belts.stream().filter(b -> !assignedBelts.contains(b)).findAny().ifPresent(b -> {
-                    Counter counter = new Counter(id, Tools.random(1, 50), Tools.randomf(5, 20), range, finalI, b);
+                    LocalTime start = LocalTime.of(0, 0, 0);
+                    LocalTime end = LocalTime.of(0, 0, 1);
+                    Counter counter = new Counter(id, start, end, Tools.random(1, 50), Tools.randomf(5, 20), range, b, finalI);
                     counters.add(counter);
                     assignedBelts.add(b);
                 });
@@ -98,15 +107,14 @@ public class ConsoleStarter {
         }
 
         for (FlightGroup flightGroup : flightGroups) {
-            long id = IdGenerator.getId("R");
             final long fgId = flightGroup.getId();
             switch ((int) fgId) {
                 default:
                     flightGroup.setRequirementList(new ArrayList<Requirement>() {{
-                        add(new Requirement(id, flightGroup, toTime("01-01-2020 08:00:00"), toTime("01-01-2020 09:00:00"), 10, 1));
-                        add(new Requirement(id, flightGroup, toTime("01-01-2020 08:00:00"), toTime("01-01-2020 09:00:00"), 10, 2));
-                        add(new Requirement(id, flightGroup, toTime("01-01-2020 08:00:00"), toTime("01-01-2020 09:00:00"), 10, 3));
-                        add(new Requirement(id, flightGroup, toTime("01-01-2020 10:00:00"), toTime("01-01-2020 11:00:00"), 10, 2));
+                        add(new Requirement(IdGenerator.getId("R"), flightGroup, fromTime("08:00:00"), fromTime("09:00:00"), 10, 1));
+                        add(new Requirement(IdGenerator.getId("R"), flightGroup, fromTime("08:00:00"), fromTime("09:00:00"), 10, 2));
+                        add(new Requirement(IdGenerator.getId("R"), flightGroup, fromTime("08:00:00"), fromTime("09:00:00"), 10, 3));
+                        add(new Requirement(IdGenerator.getId("R"), flightGroup, fromTime("10:00:00"), fromTime("11:00:00"), 10, 2));
                     }});
             }
             flightGroup.setPreferences(new HashMap<Zone, Integer>() {{
@@ -140,7 +148,7 @@ public class ConsoleStarter {
         }
     }
 
-    private static Date toTime(String time) {
+    private static Date fromTime(String time) {
         try {
             return new SimpleDateFormat("dd-MM-yyy HH:mm:ss").parse("01-01-2020 " + time + ":00");
         } catch (ParseException e) {

@@ -4,6 +4,8 @@ import app.CLIStarter;
 import common.app.Tools;
 import domain.Requirement;
 
+import static common.business.TimeTools.dateToString;
+
 public class JSRequirement {
     public long id;
     public long flight_group_id;
@@ -31,8 +33,8 @@ public class JSRequirement {
         jsRequirement.id = requirement.getId();
         jsRequirement.flight_group_id = requirement.getFlightGroup().getId();
         jsRequirement.counter_id = requirement.getCounter().getId();
-        jsRequirement.date_start = Tools.dateToString(requirement.getStartTime());
-        jsRequirement.date_end = Tools.dateToString(requirement.getStartTime());
+        jsRequirement.date_start = dateToString(requirement.getStartTime());
+        jsRequirement.date_end = dateToString(requirement.getStartTime());
         jsRequirement.buffer_time = requirement.getBufferTime();
         jsRequirement.class_type = requirement.getClassType();
         return jsRequirement;
