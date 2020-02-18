@@ -21,6 +21,14 @@ public class JSCounter {
         this.position_in_range = position_in_range;
     }
 
+    public String getUnavailabilityPeriodEndTime() {
+        return unavailabilityPeriodEndTime == null ? "00:00:00" : unavailabilityPeriodEndTime;
+    }
+
+    public String getUnavailabilityPeriodStartTime() {
+        return unavailabilityPeriodStartTime == null ? "00:00:00" : unavailabilityPeriodStartTime;
+    }
+
     public JSCounter() {
     }
 }

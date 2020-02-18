@@ -39,12 +39,13 @@ public class GanttViewer {
         TaskSeriesCollection dataset = new TaskSeriesCollection();
 
         for (FlightGroup flightGroup : solution.getFlightGroupsList()) {
-            TaskSeries flightGroupTasks = new TaskSeries(flightGroup.getLabel());
-            for (Requirement requirement : flightGroup.getRequirementList()) {
-                flightGroupTasks.add(new Task(requirement.getCounter().getLabel(), requirement.getStartTime(), requirement.getEndTime()));
+            if (flightGroup.getPlanned() != null && flightGroup.getPlanned()) {
+                TaskSeries flightGroupTasks = new TaskSeries(flightGroup.getLabel());
+                for (Requirement requirement : flightGroup.getRequirementList()) {
+                    flightGroupTasks.add(new Task(requirement.getCounter().getLabel(), requirement.getStartTime(), requirement.getEndTime()));
+                }
+                dataset.add(flightGroupTasks);
             }
-            dataset.add(flightGroupTasks);
-
         }
 
         this.dataset = dataset;

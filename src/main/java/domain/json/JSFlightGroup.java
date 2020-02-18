@@ -8,6 +8,7 @@ public class JSFlightGroup {
     public long id;
     public String name;
     public int total_passengers;
+    public boolean planned;
 
 
     public static JSFlightGroup from(FlightGroup flightGroup) {
@@ -15,6 +16,7 @@ public class JSFlightGroup {
         jsFlightGroup.id = flightGroup.getId();
         jsFlightGroup.name = flightGroup.getName();
         jsFlightGroup.total_passengers = flightGroup.getTotalPassenger();
+        jsFlightGroup.planned = flightGroup.getPlanned();
         return jsFlightGroup;
     }
 }

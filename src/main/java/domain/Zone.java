@@ -113,8 +113,6 @@ public class Zone extends AbstractPersistable {
                 congestion += expectedPassenger - this.maxPassenger;
             }
         }
-        System.out.print(flightGroup.toString());
-        System.out.println(", congestion: " + congestion);
         return congestion;
     }
 

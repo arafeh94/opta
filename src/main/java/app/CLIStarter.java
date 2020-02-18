@@ -98,8 +98,8 @@ public class CLIStarter {
             Belt belt = find(belts, jsCounter.belt_id);
             if (range != null && belt != null) {
                 Counter counter = new Counter(jsCounter.id,
-                        stringToLocalTime(jsCounter.unavailabilityPeriodStartTime),
-                        stringToLocalTime(jsCounter.unavailabilityPeriodEndTime),
+                        stringToLocalTime(jsCounter.getUnavailabilityPeriodStartTime()),
+                        stringToLocalTime(jsCounter.getUnavailabilityPeriodEndTime()),
                         jsCounter.proximity, jsCounter.ratio_passenger_per_timeunit, range, belt, jsCounter.position_in_range);
                 counters.add(counter);
                 range.addCounter(counter);
@@ -129,14 +129,10 @@ public class CLIStarter {
         }
 
         for (JSPreference jsPreference : jsAllocator.preferences) {
-            FlightGroup flightGroup = flightGroups.stream().filter(fg -> fg.getId() == jsPreference.flight_group_id).findFirst().orElse(null);
-            if (flightGroup != null) {
-                zones.stream().filter(z -> z.getId() == jsPreference.zone_id).findFirst().ifPresent(zone -> {
-                    flightGroup.putPreference(zone, jsPreference.points);
-                });
-            }
+            flightGroups.stream().filter(fg -> fg.getId() == jsPreference.flight_group_id).findFirst()
+                    .ifPresent(flightGroup -> zones.stream().filter(z -> z.getId() == jsPreference.zone_id)
+                            .findFirst().ifPresent(zone -> flightGroup.putPreference(zone, jsPreference.points)));
         }
-
 
         FgAllocator fgAllocator = new FgAllocator(1);
         fgAllocator.setZoneList(zones);
@@ -154,7 +150,7 @@ public class CLIStarter {
     private static void solveProblem(FgAllocator unsolved) throws IOException {
         FgAllocator solved = FGAllocatorSolver.solve(unsolved);
         List<JSRequirement> requirements = solved.getRequirementsList().stream().map(JSRequirement::from).collect(Collectors.toList());
-        List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().map(JSFlightGroup::from).collect(Collectors.toList());
+        List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).map(JSFlightGroup::from).collect(Collectors.toList());
         JSAllocator jsAllocator = new JSAllocator();
         jsAllocator.flightGroups = flightGroups;
         jsAllocator.requirements = requirements;

@@ -26,7 +26,6 @@
 
   <root level="warn">
     <appender-ref ref="consoleAppender" />
-    <!--<appender-ref ref="fileAppender" />-->
   </root>
 
 </configuration>

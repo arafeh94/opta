@@ -65,7 +65,6 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
     @Override
     public void afterVariableChanged(ScoreDirector scoreDirector, Requirement requirement) {
         FlightGroup flightGroup = requirement.getFlightGroup();
-        //all fg requirements
         List<Requirement> flightGroupRequirements = flightGroup.getRequirementList();
         List<Counter> counters = new ArrayList<>();
         for (Requirement i : flightGroupRequirements) {
@@ -83,7 +82,9 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
             long id1 = ids[i];
             long id2 = ids[i + 1];
             if (id2 - id1 != 1) {
+                scoreDirector.beforeVariableChanged(flightGroup, "planned");
                 flightGroup.setPlanned(false);
+                scoreDirector.afterVariableChanged(flightGroup, "planned");
                 break;
             }
         }
