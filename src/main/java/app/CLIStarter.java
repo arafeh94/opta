@@ -150,13 +150,14 @@ public class CLIStarter {
     private static void solveProblem(FgAllocator unsolved) throws IOException {
         FgAllocator solved = FGAllocatorSolver.solve(unsolved);
         List<JSRequirement> requirements = solved.getRequirementsList().stream().map(JSRequirement::from).collect(Collectors.toList());
-        List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).map(JSFlightGroup::from).collect(Collectors.toList());
+        List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().filter(fg -> fg.getPlanned() != null && fg.getPlanned()).map(JSFlightGroup::from).collect(Collectors.toList());
         JSAllocator jsAllocator = new JSAllocator();
         jsAllocator.flightGroups = flightGroups;
         jsAllocator.requirements = requirements;
         jsAllocator.image = GanttViewer.create(solved).save(SAVE_PATH);
         jsAllocator.score = new JSSCore(solved.getScore().getHardScore(0), solved.getScore().getSoftScore(0), solved.getScore().getSoftScore(1), solved.getScore().getSoftScore(2), solved.getScore().getSoftScore(3));
         System.out.println(new Gson().toJson(jsAllocator));
+//        GanttViewer.create(solved).show();
     }
 
 

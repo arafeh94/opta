@@ -168,7 +168,7 @@ public class FlightGroup extends AbstractPersistable implements Labeled {
             Counter counter = requirement.getCounter();
             if (counter != null) {
                 Conjunction conjunction = counter.getBelt().getConjunction();
-                if (calculated.indexOf(conjunction) == -1) {
+                if (calculated.indexOf(conjunction) == -1 && counter.getBelt().getConjunction() != null) {
                     totalCapacity.set(totalCapacity.get() + counter.getBelt().getConjunction().getMaxCapacity());
                     calculated.add(conjunction);
                 }

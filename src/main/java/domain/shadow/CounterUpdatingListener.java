@@ -2,6 +2,7 @@ package domain.shadow;
 
 import common.domain.AbstractPersistable;
 import domain.Counter;
+import domain.FgAllocator;
 import domain.FlightGroup;
 import domain.Requirement;
 import org.optaplanner.core.impl.domain.variable.listener.VariableListener;
@@ -82,9 +83,7 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
             long id1 = ids[i];
             long id2 = ids[i + 1];
             if (id2 - id1 != 1) {
-                scoreDirector.beforeVariableChanged(flightGroup, "planned");
                 flightGroup.setPlanned(false);
-                scoreDirector.afterVariableChanged(flightGroup, "planned");
                 break;
             }
         }
