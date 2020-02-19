@@ -22,5 +22,6 @@ public class JSAllocator {
     public List<JSConjunction> conjunctions;
     public String image;
     public JSSCore score;
+    public int includeUnplanned;
 
 }

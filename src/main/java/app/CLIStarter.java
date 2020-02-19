@@ -31,11 +31,17 @@ public class CLIStarter {
             Scanner scanner = new Scanner(input);
             StringBuilder fileContent = new StringBuilder("");
             scanner.forEachRemaining(s -> fileContent.append(s).append(" "));
-            FgAllocator allocator = loadProject(fileContent.toString());
-            solveProblem(allocator);
+            JSAllocator complied = parse(fileContent.toString());
+            FgAllocator allocator = loadProject(complied);
+            solveProblem(allocator, complied.includeUnplanned == 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static JSAllocator parse(String fileContent) {
+        Gson gson = new Gson();
+        return gson.fromJson(fileContent, JSAllocator.class);
     }
 
     /**
@@ -47,12 +53,10 @@ public class CLIStarter {
      * l opta planner 3indu classes khsouse fi
      * lahek halla2 3am 7awlon men JS_Classes lal l classes lli mesta3mlinon bel opta planner
      *
-     * @param fileContent
+     * @param jsAllocator
      * @return
      */
-    private static FgAllocator loadProject(String fileContent) throws ParseException {
-        Gson gson = new Gson();
-        JSAllocator jsAllocator = gson.fromJson(fileContent, JSAllocator.class);
+    private static FgAllocator loadProject(JSAllocator jsAllocator) throws ParseException {
         ArrayList<Terminal> terminals = new ArrayList<>();
         for (JSTerminal jsTerminal : jsAllocator.terminals) {
             terminals.add(new Terminal(jsTerminal.id, jsTerminal.name));
@@ -147,17 +151,32 @@ public class CLIStarter {
         return fgAllocator;
     }
 
-    private static void solveProblem(FgAllocator unsolved) throws IOException {
+    private static void solveProblem(FgAllocator unsolved, boolean includeUnplanned) throws IOException {
         FgAllocator solved = FGAllocatorSolver.solve(unsolved);
         List<JSRequirement> requirements = solved.getRequirementsList().stream().map(JSRequirement::from).collect(Collectors.toList());
         List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().filter(fg -> fg.getPlanned() != null && fg.getPlanned()).map(JSFlightGroup::from).collect(Collectors.toList());
         JSAllocator jsAllocator = new JSAllocator();
         jsAllocator.flightGroups = flightGroups;
         jsAllocator.requirements = requirements;
-        jsAllocator.image = GanttViewer.create(solved).save(SAVE_PATH);
-        jsAllocator.score = new JSSCore(solved.getScore().getHardScore(0), solved.getScore().getSoftScore(0), solved.getScore().getSoftScore(1), solved.getScore().getSoftScore(2), solved.getScore().getSoftScore(3));
+        jsAllocator.image = GanttViewer.create(solved, includeUnplanned).save(SAVE_PATH);
+        jsAllocator.score = initScore(solved);
+        solved.getFlightGroupsList().stream().filter(fg -> !fg.getPlanned() && !fg.getRequirementList().isEmpty()).forEach(fg -> System.out.println("<b>Flight Group - " + fg.getId() + "</b> is not planned <b>" + fg.getReason() + "</b>"));
         System.out.println(new Gson().toJson(jsAllocator));
-        GanttViewer.create(solved).show();
+//        GanttViewer.create(solved, includeUnplanned).show();
+    }
+
+
+    private static JSSCore initScore(FgAllocator solved) {
+        JSSCore jssCore = new JSSCore();
+        jssCore.hard1 = solved.getScore().getHardScore(0);
+        jssCore.soft1 = solved.getScore().getSoftScore(0);
+        jssCore.soft2 = solved.getScore().getSoftScore(1);
+        jssCore.soft3 = solved.getScore().getSoftScore(2);
+        jssCore.soft4 = solved.getScore().getSoftScore(3);
+        int count = (int) solved.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).count();
+        jssCore.planned = count;
+        jssCore.unplanned = Math.abs(solved.getFlightGroupsList().size() - count);
+        return jssCore;
     }
 
 

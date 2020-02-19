@@ -17,21 +17,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import static common.business.TimeTools.fromTime;
+
 public class ConsoleStarter {
 
     public static void main(String[] args) throws IOException {
         FgAllocator solvedFgAllocator = FGAllocatorSolver.solve(generateAllocationProblem());
         printSolution(solvedFgAllocator);
-        GanttViewer.create(solvedFgAllocator,true).show();
+        GanttViewer.create(solvedFgAllocator, true).show();
     }
 
     private static void printSolution(FgAllocator solvedFgAllocator) {
         System.out.println("Flight Groups");
-        solvedFgAllocator.getFlightGroupsList().forEach(System.out::println);
-        System.out.println("Counters");
-        for (Counter counter : solvedFgAllocator.getCountersList()) {
-            System.out.println(counter.toString());
-        }
+        solvedFgAllocator.getFlightGroupsList().forEach(flightGroup -> System.out.println(flightGroup.getLabel() + ", reason: " + flightGroup.getReason()));
         System.out.println("Counters Distribution");
         for (Requirement requirement : solvedFgAllocator.getRequirementsList()) {
             System.out.println(requirement);
@@ -182,13 +180,6 @@ public class ConsoleStarter {
         }
     }
 
-    private static Date fromTime(String time) {
-        try {
-            return new SimpleDateFormat("dd-MM-yyy HH:mm:ss").parse("01-01-2020 " + time + ":00");
-        } catch (ParseException e) {
-            return null;
-        }
-    }
 
     public static boolean saveProblem(FgAllocator allocator, String problemName) {
         try {
