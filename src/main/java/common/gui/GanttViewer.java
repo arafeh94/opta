@@ -21,8 +21,12 @@ import java.io.OutputStream;
 
 public class GanttViewer {
 
+    public static GanttViewer create(FgAllocator allocator, boolean includeUnplanned) {
+        return new GanttViewer(allocator, includeUnplanned);
+    }
+
     public static GanttViewer create(FgAllocator allocator) {
-        return new GanttViewer(allocator);
+        return new GanttViewer(allocator, false);
     }
 
     private FgAllocator solution;
@@ -31,15 +35,18 @@ public class GanttViewer {
     private IntervalCategoryDataset dataset;
     private ChartPanel chartPanel;
     private JFreeChart chart;
+    private boolean showAll = false;
 
-    private GanttViewer(FgAllocator solution) {
+    private GanttViewer(FgAllocator solution, boolean includeUnplanned) {
+        this.showAll = includeUnplanned;
         this.solution = solution;
     }
 
     private void init() {
         TaskSeriesCollection dataset = new TaskSeriesCollection();
         for (FlightGroup flightGroup : solution.getFlightGroupsList()) {
-            if (flightGroup.getPlanned() != null && flightGroup.getPlanned()) {
+            boolean show = showAll || flightGroup.getPlanned() != null && flightGroup.getPlanned();
+            if (show) {
                 TaskSeries flightGroupTasks = new TaskSeries(flightGroup.getLabel());
                 for (Requirement requirement : flightGroup.getRequirementList()) {
                     flightGroupTasks.add(new Task(requirement.getCounter().getLabel(), requirement.getStartTime(), requirement.getEndTime()));
