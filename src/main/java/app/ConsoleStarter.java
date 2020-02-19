@@ -24,7 +24,7 @@ public class ConsoleStarter {
     public static void main(String[] args) throws IOException {
         FgAllocator solvedFgAllocator = FGAllocatorSolver.solve(generateAllocationProblemBig());
         printSolution(solvedFgAllocator);
-        GanttViewer.create(solvedFgAllocator, false).show();
+        GanttViewer.create(solvedFgAllocator, true).show();
     }
 
     private static void printSolution(FgAllocator solvedFgAllocator) {
@@ -48,7 +48,6 @@ public class ConsoleStarter {
         ArrayList<Belt> belts = new ArrayList<>();
         ArrayList<FlightGroup> flightGroups = new ArrayList<>();
         ArrayList<Requirement> requirements = new ArrayList<>();
-        ArrayList<Belt> assignedBelts = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
             long id = IdGenerator.getId("B");
@@ -145,7 +144,7 @@ public class ConsoleStarter {
         counters.add(counter9);
 
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 30; i++) {
             long id = IdGenerator.getId("F");
             FlightGroup flightGroup = new FlightGroup(id, "fg - " + id, Tools.random(10, 50), new ArrayList<>(), new HashMap<>());
             flightGroups.add(flightGroup);
@@ -341,85 +340,85 @@ public class ConsoleStarter {
         }});
         requirements.addAll(flightGroups.get(19).getRequirementList());
 
-//        flightGroups.get(20).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(20), fromTime("17:00:00"), fromTime("18:00:00"), 7, 2));
-//        }});
-//        flightGroups.get(20).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(20).getRequirementList());
-//
-//        flightGroups.get(21).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(21), fromTime("10:00:00"), fromTime("10:30:00"), 7, 2));
-//        }});
-//        flightGroups.get(21).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(21).getRequirementList());
-//
-//        flightGroups.get(22).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(22), fromTime("20:00:00"), fromTime("20:30:00"), 7, 2));
-//        }});
-//        flightGroups.get(22).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(22).getRequirementList());
-//
-//        flightGroups.get(23).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(23), fromTime("10:00:00"), fromTime("12:00:00"), 7, 2));
-//        }});
-//        flightGroups.get(23).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(23).getRequirementList());
-//
-//        flightGroups.get(24).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(24), fromTime("13:00:00"), fromTime("14:00:00"), 7, 2));
-//        }});
-//        flightGroups.get(24).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(24).getRequirementList());
-//
-//        flightGroups.get(25).setRequirementList(new ArrayList<Requirement>() {{
-//           add(new Requirement(IdGenerator.getId("R"), flightGroups.get(25), fromTime("15:00:00"), fromTime("15:30:00"), 7, 2));
-//        }});
-//        flightGroups.get(25).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(25).getRequirementList());
-//
-//        flightGroups.get(26).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(26), fromTime("20:00:00"), fromTime("21:30:00"), 7, 2));
-//        }});
-//        flightGroups.get(26).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(26).getRequirementList());
-//
-//        flightGroups.get(27).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(27), fromTime("13:00:00"), fromTime("15:00:00"), 7, 2));
-//        }});
-//        flightGroups.get(27).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(27).getRequirementList());
-//
-//        flightGroups.get(28).setRequirementList(new ArrayList<Requirement>() {{
-//            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(28), fromTime("17:15:00"), fromTime("19:00:00"), 7, 2));
-//        }});
-//        flightGroups.get(28).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(28).getRequirementList());
-//
-//        flightGroups.get(29).setRequirementList(new ArrayList<Requirement>() {{
-//             add(new Requirement(IdGenerator.getId("R"), flightGroups.get(29), fromTime("13:00:00"), fromTime("15:30:00"), 7, 2));
-//        }});
-//        flightGroups.get(29).setPreferences(new HashMap<Zone, Integer>() {{
-//            put(z1, 40);
-//        }});
-//        requirements.addAll(flightGroups.get(29).getRequirementList());
+        flightGroups.get(20).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(20), fromTime("17:00:00"), fromTime("18:00:00"), 7, 2));
+        }});
+        flightGroups.get(20).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(20).getRequirementList());
+
+        flightGroups.get(21).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(21), fromTime("10:00:00"), fromTime("10:30:00"), 7, 2));
+        }});
+        flightGroups.get(21).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(21).getRequirementList());
+
+        flightGroups.get(22).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(22), fromTime("20:00:00"), fromTime("20:30:00"), 7, 2));
+        }});
+        flightGroups.get(22).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(22).getRequirementList());
+
+        flightGroups.get(23).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(23), fromTime("10:00:00"), fromTime("12:00:00"), 7, 2));
+        }});
+        flightGroups.get(23).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(23).getRequirementList());
+
+        flightGroups.get(24).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(24), fromTime("13:00:00"), fromTime("14:00:00"), 7, 2));
+        }});
+        flightGroups.get(24).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(24).getRequirementList());
+
+        flightGroups.get(25).setRequirementList(new ArrayList<Requirement>() {{
+           add(new Requirement(IdGenerator.getId("R"), flightGroups.get(25), fromTime("15:00:00"), fromTime("15:30:00"), 7, 2));
+        }});
+        flightGroups.get(25).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(25).getRequirementList());
+
+        flightGroups.get(26).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(26), fromTime("20:00:00"), fromTime("21:30:00"), 7, 2));
+        }});
+        flightGroups.get(26).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(26).getRequirementList());
+
+        flightGroups.get(27).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(27), fromTime("13:00:00"), fromTime("15:00:00"), 7, 2));
+        }});
+        flightGroups.get(27).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(27).getRequirementList());
+
+        flightGroups.get(28).setRequirementList(new ArrayList<Requirement>() {{
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(28), fromTime("17:15:00"), fromTime("19:00:00"), 7, 2));
+        }});
+        flightGroups.get(28).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(28).getRequirementList());
+
+        flightGroups.get(29).setRequirementList(new ArrayList<Requirement>() {{
+             add(new Requirement(IdGenerator.getId("R"), flightGroups.get(29), fromTime("13:00:00"), fromTime("15:30:00"), 7, 2));
+        }});
+        flightGroups.get(29).setPreferences(new HashMap<Zone, Integer>() {{
+            put(z1, 40);
+        }});
+        requirements.addAll(flightGroups.get(29).getRequirementList());
 
 
         fgAllocator1.setConjunctionList(conjunctions);

@@ -1,5 +1,6 @@
 package domain.shadow;
 
+import common.business.Interval;
 import common.domain.AbstractPersistable;
 import domain.Counter;
 import domain.FgAllocator;
@@ -8,8 +9,7 @@ import domain.Requirement;
 import org.optaplanner.core.impl.domain.variable.listener.VariableListener;
 import org.optaplanner.core.impl.score.director.ScoreDirector;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CounterUpdatingListener implements VariableListener<Requirement> {
 
@@ -61,21 +61,31 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
      * leish 7esses inna 3 for each for ba3ed -_-
      *
      * @param scoreDirector
-     * @param requirement
+     * @param gottenReq
      */
     @Override
-    public void afterVariableChanged(ScoreDirector scoreDirector, Requirement requirement) {
-        FlightGroup flightGroup = requirement.getFlightGroup();
-        List<Requirement> flightGroupRequirements = flightGroup.getRequirementList();
-        List<Counter> counters = new ArrayList<>();
-        if (flightGroupRequirements.size() == 1) {
+    public void afterVariableChanged(ScoreDirector scoreDirector, Requirement gottenReq) {
+        FlightGroup flightGroup = gottenReq.getFlightGroup();
+        List<Requirement> requirements = flightGroup.getRequirementList();
+        if (requirements.size() == 1) {
             flightGroup.setPlanned(true, "");
             return;
         }
-        for (Requirement i : flightGroupRequirements) {
+        HashMap<Interval, ArrayList<Counter>> overlappedCounters = new HashMap<>();
+
+        for (Requirement i : requirements) {
             if (i.getCounter() != null) {
-                counters.add(i.getCounter());
-                for (Requirement j : flightGroupRequirements) {
+                Optional<Interval> interval = overlappedCounters.keySet().stream()
+                        .filter(t -> t.overlapped(i.getInterval())).findAny();
+                if (interval.isPresent()) {
+                    overlappedCounters.get(interval.get()).add(i.getCounter());
+                    interval.get().expand(i.getInterval());
+                } else {
+                    ArrayList<Counter> clist = new ArrayList<>();
+                    clist.add(i.getCounter());
+                    overlappedCounters.put(i.getInterval(), new ArrayList<>(clist));
+                }
+                for (Requirement j : requirements) {
                     if (j.getCounter() != null) {
                         if (i == j) continue;
                         if (i.getCounter() == j.getCounter() && i.isOverlappedWith(j)) {
@@ -88,14 +98,26 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
                 }
             }
         }
-        int errors = 0;
-        for (Requirement req : flightGroupRequirements) {
-            if (req.getCounter() != null && counters.indexOf(req.getCounter().next()) == -1) {
-                errors += 1;
+
+
+        //if the next counter of the current one inside the list of all counter
+        //that means good
+        //if not
+        //this is an error
+        //if there is more than 1 error
+        //flightgroup is unplanned
+        for (Interval interval : overlappedCounters.keySet()) {
+            ArrayList<Counter> overlappedInTimestamp = overlappedCounters.get(interval);
+            int errors = 0;
+            for (Counter counter : overlappedInTimestamp) {
+                if (!overlappedInTimestamp.contains(counter.next())) {
+                    errors += 1;
+                }
+            }
+            if (errors > 1) {
+                changePlanningStatus(scoreDirector, flightGroup, false, "because counters aren't in sequence inside the same flight group interval @check CounterUpdatingListener");
             }
         }
-        String msg = "because didn't have sequential counters";
-        changePlanningStatus(scoreDirector, flightGroup, errors <= 1, msg);
     }
 
     private void changePlanningStatus(ScoreDirector scoreDirector, FlightGroup flightGroup, boolean isPlanned, String msg) {

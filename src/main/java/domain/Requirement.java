@@ -1,6 +1,7 @@
 package domain;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import common.business.Interval;
 import common.business.TimeTools;
 import common.domain.AbstractPersistable;
 import common.domain.IdGenerator;
@@ -98,6 +99,17 @@ public class Requirement extends AbstractPersistable implements Labeled {
 
     public void setBufferTime(int bufferTime) {
         this.bufferTime = bufferTime;
+    }
+
+    public Interval getInterval(boolean includeBuffer) {
+        long end = this.getEndTime().getTime();
+        if (includeBuffer) {
+            end += this.bufferTime * 60 * 1000;
+        }
+        return new Interval(this.startTime.getTime(), end);
+    }
+    public Interval getInterval() {
+        return getInterval(true);
     }
 
     /**

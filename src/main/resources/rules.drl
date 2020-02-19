@@ -47,11 +47,11 @@ rule "unavailable_counter"
     scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
 
-//kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed zid  lscore
+//kel ma tle2e tnn requirement bnafes l interval la same fg 3indon counters 7ad ba3ed zid  lscore
 rule "siblings_enforcer"
     when
-        Requirement($fg:flightGroup, counter!=null, $counter:counter,$classType:classType)
-        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()))
+        $req : Requirement($fg:flightGroup, counter!=null, $counter:counter,$classType:classType)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()),isOverlappedWith($req))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,+2);
 end
@@ -59,8 +59,8 @@ end
 //kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed w henne "mannon same class", "na22es" lscore * 0.5 weight
 rule "class_enforcer"
     when
-        Requirement($fg:flightGroup, counter!=null, $counter:counter, $classType:classType)
-        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), $classType!= classType)
+        $req : Requirement($fg:flightGroup, counter!=null, $counter:counter, $classType:classType)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), $classType!= classType,isOverlappedWith($req))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,-1);
 end
@@ -68,8 +68,8 @@ end
 //kel ma tle2e tnn requirement la same fg 3indon counters 7ad ba3ed w henne "mannon in the same zone", "na22es" lscore
 rule "zone_enforcer"
     when
-        Requirement($fg:flightGroup, counter!=null, $counter:counter)
-        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), !counter.isInSameZone($counter))
+        $req : Requirement($fg:flightGroup, counter!=null, $counter:counter)
+        Requirement(flightGroup==$fg, counter!=null, counter.equals($counter.next()), !counter.isInSameZone($counter),isOverlappedWith($req))
     then
         scoreHolder.addHardConstraintMatch(kcontext,0,-2);
 end
