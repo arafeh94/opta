@@ -79,10 +79,10 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
                     if (j.getCounter() != null) {
                         if (i == j) continue;
                         if (i.getCounter() == j.getCounter() && i.isOverlappedWith(j)) {
-                            flightGroup.setPlanned(false, "because overlapping");
+                            changePlanningStatus(scoreDirector, flightGroup, false, "because overlapping");
                             return;
                         } else {
-                            flightGroup.setPlanned(true, "");
+                            changePlanningStatus(scoreDirector, flightGroup, true, "");
                         }
                     }
                 }
@@ -95,7 +95,13 @@ public class CounterUpdatingListener implements VariableListener<Requirement> {
             }
         }
         String msg = "because didn't have sequential counters";
-        flightGroup.setPlanned(errors <= 1, msg);
+        changePlanningStatus(scoreDirector, flightGroup, errors <= 1, msg);
+    }
+
+    private void changePlanningStatus(ScoreDirector scoreDirector, FlightGroup flightGroup, boolean isPlanned, String msg) {
+        scoreDirector.beforeVariableChanged(flightGroup, "planned");
+        flightGroup.setPlanned(isPlanned, msg);
+        scoreDirector.afterVariableChanged(flightGroup, "planned");
     }
 
 

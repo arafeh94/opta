@@ -44,6 +44,7 @@ public class FlightGroup extends AbstractPersistable implements Labeled {
     @CustomShadowVariable(variableListenerClass = CounterUpdatingListener.class,
             sources = {@PlanningVariableReference(entityClass = Requirement.class, variableName = "counter")})
     public Boolean getPlanned() {
+        if (planned == null) return false;
         return planned;
     }
 
