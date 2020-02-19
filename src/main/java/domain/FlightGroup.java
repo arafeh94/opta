@@ -53,6 +53,11 @@ public class FlightGroup extends AbstractPersistable implements Labeled {
         this.reason = reason;
     }
 
+    public String getReason() {
+        if (reason == null) return "";
+        return reason;
+    }
+
     public List<Requirement> getRequirementList() {
         return requirementList;
     }

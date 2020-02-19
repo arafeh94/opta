@@ -23,7 +23,7 @@ public class FGAllocatorSolver {
             for (Requirement j : requirements) {
                 if (i != j) {
                     if (i.getCounter().equals(j.getCounter()) && i.isOverlappedWith(j)) {
-                        i.getFlightGroup().setPlanned(false, "Global Conflict");
+                        i.getFlightGroup().setPlanned(false, "because global overlapping");
                     }
                 }
             }
