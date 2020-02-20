@@ -8,4 +8,5 @@ public class JSSCore {
     public int soft4;
     public int planned;
     public int unplanned;
+    public long time;
 }

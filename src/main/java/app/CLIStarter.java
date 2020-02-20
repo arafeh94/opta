@@ -138,6 +138,7 @@ public class CLIStarter {
                             .findFirst().ifPresent(zone -> flightGroup.putPreference(zone, jsPreference.points)));
         }
 
+        flightGroups.removeAll(flightGroups.stream().filter(fg -> fg.getRequirementList().isEmpty()).collect(Collectors.toList()));
         FgAllocator fgAllocator = new FgAllocator(1);
         fgAllocator.setZoneList(zones);
         fgAllocator.setCountersList(counters);
@@ -173,6 +174,7 @@ public class CLIStarter {
         jssCore.soft2 = solved.getScore().getSoftScore(1);
         jssCore.soft3 = solved.getScore().getSoftScore(2);
         jssCore.soft4 = solved.getScore().getSoftScore(3);
+        jssCore.time = FGAllocatorSolver.TIME_SPENT;
         int count = (int) solved.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).count();
         jssCore.planned = count;
         jssCore.unplanned = Math.abs(solved.getFlightGroupsList().size() - count);

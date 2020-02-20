@@ -8,14 +8,14 @@ import java.util.List;
 
 @XStreamAlias("Belt")
 public class Belt extends AbstractPersistable {
-    private int ratioBagPerTimeUnit;
+    private float ratioBagPerTimeUnit;
     private String name;
     private Conjunction conjunction;
 
     public Belt() {
     }
 
-    public Belt(long id, int ratioBagPerTimeUnit, String name) {
+    public Belt(long id, float ratioBagPerTimeUnit, String name) {
         super(id);
         this.ratioBagPerTimeUnit = ratioBagPerTimeUnit;
         this.name = name;
@@ -37,11 +37,11 @@ public class Belt extends AbstractPersistable {
         this.name = name;
     }
 
-    public int getRatioBagPerTimeUnit() {
+    public float getRatioBagPerTimeUnit() {
         return ratioBagPerTimeUnit;
     }
 
-    public void setRatioBagPerTimeUnit(int ratioBagPerTimeUnit) {
+    public void setRatioBagPerTimeUnit(float ratioBagPerTimeUnit) {
         this.ratioBagPerTimeUnit = ratioBagPerTimeUnit;
     }
 
