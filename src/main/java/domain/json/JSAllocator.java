@@ -1,6 +1,7 @@
 package domain.json;
 
 import com.sun.org.apache.bcel.internal.generic.JSR;
+import common.gui.GanttDataBuilder;
 import domain.Belt;
 import domain.Range;
 import domain.Terminal;
@@ -20,8 +21,7 @@ public class JSAllocator {
     public List<JSRange> ranges;
     public List<JSBelt> belts;
     public List<JSConjunction> conjunctions;
-    public String image;
     public JSSCore score;
     public int includeUnplanned;
-
+    public GanttDataBuilder.TaskSeriesCollection data;
 }

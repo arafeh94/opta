@@ -2,6 +2,7 @@ package app;
 
 import com.google.gson.Gson;
 import common.app.FGAllocatorSolver;
+import common.gui.GanttDataBuilder;
 import common.gui.GanttViewer;
 import domain.*;
 import domain.json.*;
@@ -159,11 +160,10 @@ public class CLIStarter {
         JSAllocator jsAllocator = new JSAllocator();
         jsAllocator.flightGroups = flightGroups;
         jsAllocator.requirements = requirements;
-        jsAllocator.image = GanttViewer.create(solved, includeUnplanned).save(SAVE_PATH);
         jsAllocator.score = initScore(solved);
+        jsAllocator.data = GanttDataBuilder.build(solved, includeUnplanned);
         solved.getFlightGroupsList().stream().filter(fg -> !fg.getPlanned() && !fg.getRequirementList().isEmpty()).forEach(fg -> System.out.println("<b>Flight Group - " + fg.getId() + "</b> is not planned <b>" + fg.getReason() + "</b>"));
         System.out.println(new Gson().toJson(jsAllocator));
-//        GanttViewer.create(solved, includeUnplanned).show();
     }
 
 

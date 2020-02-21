@@ -12,7 +12,7 @@
     <repositories>
         <repository>
             <id>jboss-public-repository-group</id>
-            <name>JBoss Public Repository Group</name>
+            <title>JBoss Public Repository Group</title>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
             <layout>default</layout>
             <releases>
