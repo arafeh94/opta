@@ -117,7 +117,7 @@ public class Counter extends AbstractPersistable implements Labeled {
 
     @Override
     public String getLabel() {
-        return "Counter id:" + id + ", ";
+        return "Counter " + id;
     }
 
     @Override
