@@ -8,6 +8,8 @@ import common.gui.GanttViewer;
 import domain.*;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
+import org.optaplanner.core.impl.score.director.ScoreDirector;
+import org.optaplanner.core.impl.score.director.ScoreDirectorFactory;
 
 import java.io.*;
 import java.text.ParseException;
@@ -22,9 +24,14 @@ import static common.business.TimeTools.fromTime;
 public class ConsoleStarter {
 
     public static void main(String[] args) throws IOException {
-        FgAllocator solvedFgAllocator = FGAllocatorSolver.solve(generateAllocationProblemBig());
-        printSolution(solvedFgAllocator);
-        GanttViewer.create(solvedFgAllocator, true).show();
+        FGAllocatorSolver solver = FGAllocatorSolver.getInstance(generateAllocationProblemBig());
+        FgAllocator solvedFgAllocator = solver.solve();
+        System.out.println(solver.getBestScore());
+        solvedFgAllocator.getRequirementsList().get(0).setCounter(solver.getBestSolution().getCountersList().get(0));
+        solvedFgAllocator.getRequirementsList().get(1).setCounter(solver.getBestSolution().getCountersList().get(1));
+        solvedFgAllocator.getRequirementsList().get(2).setCounter(solver.getBestSolution().getCountersList().get(2));
+        System.out.println(solver.scoreSolution(solvedFgAllocator));
+
     }
 
     private static void printSolution(FgAllocator solvedFgAllocator) {
@@ -36,7 +43,7 @@ public class ConsoleStarter {
         }
     }
 
-    private static FgAllocator generateAllocationProblemBig(){
+    private static FgAllocator generateAllocationProblemBig() {
         //9 belts 9 counters 9 conjunction point 1 range 1 terminal 1 zone 30 fg 50 req
 
         FgAllocator fgAllocator1 = new FgAllocator();
@@ -381,7 +388,7 @@ public class ConsoleStarter {
         requirements.addAll(flightGroups.get(24).getRequirementList());
 
         flightGroups.get(25).setRequirementList(new ArrayList<Requirement>() {{
-           add(new Requirement(IdGenerator.getId("R"), flightGroups.get(25), fromTime("15:00:00"), fromTime("15:30:00"), 7, 2));
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(25), fromTime("15:00:00"), fromTime("15:30:00"), 7, 2));
         }});
         flightGroups.get(25).setPreferences(new HashMap<Zone, Integer>() {{
             put(z1, 40);
@@ -413,7 +420,7 @@ public class ConsoleStarter {
         requirements.addAll(flightGroups.get(28).getRequirementList());
 
         flightGroups.get(29).setRequirementList(new ArrayList<Requirement>() {{
-             add(new Requirement(IdGenerator.getId("R"), flightGroups.get(29), fromTime("13:00:00"), fromTime("15:30:00"), 7, 2));
+            add(new Requirement(IdGenerator.getId("R"), flightGroups.get(29), fromTime("13:00:00"), fromTime("15:30:00"), 7, 2));
         }});
         flightGroups.get(29).setPreferences(new HashMap<Zone, Integer>() {{
             put(z1, 40);

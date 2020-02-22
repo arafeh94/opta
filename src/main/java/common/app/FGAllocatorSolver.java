@@ -1,33 +1,62 @@
 package common.app;
 
-import common.gui.GanttViewer;
 import domain.FgAllocator;
 import domain.FlightGroup;
 import domain.Requirement;
+import org.optaplanner.core.api.score.Score;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
-import org.optaplanner.core.api.solver.event.BestSolutionChangedEvent;
-import org.optaplanner.core.api.solver.event.SolverEventListener;
+import org.optaplanner.core.impl.score.director.ScoreDirector;
+import org.optaplanner.core.impl.score.director.ScoreDirectorFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FGAllocatorSolver {
-    public static long TIME_SPENT = 0;
 
-    public static FgAllocator solve(FgAllocator allocator) {
+    public static FGAllocatorSolver getInstance(FgAllocator problem) {
+        return new FGAllocatorSolver(problem);
+    }
+
+
+    private FgAllocator problem;
+    private FgAllocator solved;
+    private Solver<FgAllocator> solver;
+
+
+    private FGAllocatorSolver(FgAllocator problem) {
+        this.problem = problem;
+    }
+
+    public FgAllocator solve() {
         SolverFactory<FgAllocator> solverFactory = SolverFactory.createFromXmlResource("config.xml");
-        Solver<FgAllocator> solver = solverFactory.buildSolver();
-        FgAllocator solved = kickOverlapping(solver.solve(allocator));
-        updateClassInfo(solver);
+        this.solver = solverFactory.buildSolver();
+        this.solved = kickOverlapping(solver.solve(this.problem));
+        return this.solved;
+    }
+
+    public long getTimeSpent() {
+        return this.solver.getTimeMillisSpent();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Score scoreSolution(FgAllocator solution) {
+        ScoreDirectorFactory scoreDirectorFactory = solver.getScoreDirectorFactory();
+        ScoreDirector guiScoreDirector = scoreDirectorFactory.buildScoreDirector();
+        guiScoreDirector.setWorkingSolution(solution);
+        return guiScoreDirector.calculateScore();
+    }
+
+    public FgAllocator getBestSolution() {
         return solved;
     }
 
-    private static void updateClassInfo(Solver<FgAllocator> solver) {
-        TIME_SPENT = solver.getTimeMillisSpent();
+    public Score getBestScore() {
+        return solver.getBestScore();
     }
 
-    private static FgAllocator kickOverlapping(FgAllocator solve) {
+
+    private FgAllocator kickOverlapping(FgAllocator solve) {
         List<Requirement> requirements = solve.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).flatMap(flightGroup -> flightGroup.getRequirementList().stream()).collect(Collectors.toList());
         for (Requirement i : requirements) {
             for (Requirement j : requirements) {

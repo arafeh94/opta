@@ -3,7 +3,6 @@ package app;
 import com.google.gson.Gson;
 import common.app.FGAllocatorSolver;
 import common.gui.GanttDataBuilder;
-import common.gui.GanttViewer;
 import domain.*;
 import domain.json.*;
 
@@ -21,6 +20,7 @@ import static common.business.TimeTools.stringToLocalTime;
 public class CLIStarter {
     private static final String SAVE_PATH = "C:\\wamp64\\www\\optaweb\\web";
 
+    public static FGAllocatorSolver SOLVER;
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -154,7 +154,8 @@ public class CLIStarter {
     }
 
     private static void solveProblem(FgAllocator unsolved, boolean includeUnplanned) throws IOException {
-        FgAllocator solved = FGAllocatorSolver.solve(unsolved);
+        CLIStarter.SOLVER = FGAllocatorSolver.getInstance(unsolved);
+        FgAllocator solved = SOLVER.solve();
         List<JSRequirement> requirements = solved.getRequirementsList().stream().map(JSRequirement::from).collect(Collectors.toList());
         List<JSFlightGroup> flightGroups = solved.getFlightGroupsList().stream().filter(fg -> fg.getPlanned() != null && fg.getPlanned()).map(JSFlightGroup::from).collect(Collectors.toList());
         JSAllocator jsAllocator = new JSAllocator();
@@ -174,7 +175,7 @@ public class CLIStarter {
         jssCore.soft2 = solved.getScore().getSoftScore(1);
         jssCore.soft3 = solved.getScore().getSoftScore(2);
         jssCore.soft4 = solved.getScore().getSoftScore(3);
-        jssCore.time = FGAllocatorSolver.TIME_SPENT;
+        jssCore.time = SOLVER.getTimeSpent();
         int count = (int) solved.getFlightGroupsList().stream().filter(FlightGroup::getPlanned).count();
         jssCore.planned = count;
         jssCore.unplanned = Math.abs(solved.getFlightGroupsList().size() - count);
